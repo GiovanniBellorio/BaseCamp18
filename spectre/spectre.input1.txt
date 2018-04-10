@@ -1,0 +1,6 @@
+5
+width = length + deltax
+height = length + deltay
+area = width * height
+halfarea = area / two
+perimeter = length * four
