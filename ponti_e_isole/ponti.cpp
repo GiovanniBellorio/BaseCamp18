@@ -1,77 +1,54 @@
-#include <iostream>
-#include <algorithm>
+#include <stdio.h>
+#include <assert.h>
 #include <vector>
-#include <map>
-#include <set>
-#include <fstream>
-#include <queue>
-#include <stack>
-#include <string.h>
 
-using namespace std;
+using std::vector;
 
-typedef pair<int,int> pi;
-typedef vector<int> vi;
+#define MAXM 100000
+vector<int> adj[MAXM];
+bool visitato[MAXM];
 
-#define MAXN 1010
-
-struct strada
-{
-    strada(){}
-    strada(int _a,int _l):a(_a),l(_l){}
-    int a,l;
-};
-
-bool finit[MAXN];
-bool visitato[MAXN];
-vector<strada> grafo[MAXN];
-int dist[MAXN];
-
-int l_min_ciclo = 200000000;
-
-void dfs(int inizio, int att, int l, int n)
-{
-    if (n >= 3 && att == inizio)
-    {
-        l_min_ciclo = min(l_min_ciclo,l);
+void DFS(int i){
+    if(visitato[i])
         return;
-    }
-
-    if (visitato[att] || l >= l_min_ciclo || finit[att]  ) return;
-
-    visitato[att] = true;
-
-    for (int i = 0; i < grafo[att].size(); i++)
-    {
-        strada & s = grafo[att][i];
-        dfs(inizio, s.a, l + s.l, n+1);
-    }
-    visitato[att] = false;
+    visitato[i] = true;
+    for(int n : adj[i])
+        DFS(n);
 }
-int main()
-{
-    ifstream in("input.txt");
-    ofstream out("output.txt");
 
-    int N, M; // case, tratti di strada
-    in>>N>>M;
+int costruisci(int N, int M, int da[], int a[]) {
+    // Mettete qui il codice della soluzione
 
-    int da,a,l;
-    for (int i = 0; i < M; i++)
-    {
-        in>>da>>a>>l;
-        grafo[da].push_back(strada(a,l));
-        grafo[a].push_back(strada(da,l));
+    for(int i = 0; i < M; i++){
+        adj[da[i]].push_back(a[i]);
+        adj[a[i]].push_back(da[i]);
     }
 
-    for (int i = 1; i <= N; i++)
-    {
-        memset(visitato, false, sizeof(visitato));
-        dfs(i,i,0,0);
-        finit[i] = true;
+    int count = -1;
+    for(int i = 0; i < N; i++){
+        if(!visitato[i]){
+            count++;
+            DFS(i);
+        }
     }
+    return count;
+}
 
-    out<<l_min_ciclo;
-    //cout<<l_min_ciclo;
+
+int da[MAXM], a[MAXM];
+
+int main() {
+#ifdef  EVAL
+    freopen("input.txt", "r", stdin);
+    freopen("output.txt", "w", stdout);
+#endif
+
+    int N, M;
+    assert(2 == scanf("%d %d", &N, &M));
+
+    for(int i = 0; i < M; i++)
+        assert(2 == scanf("%d %d", &da[i], &a[i]));
+
+    printf("%d\n", costruisci(N, M, da, a));
     return 0;
 }
